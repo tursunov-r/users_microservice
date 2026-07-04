@@ -20,7 +20,7 @@ class AuthRepository:
         query = await session.execute(
             select(UserModel).where(
                 and_(
-                    UserModel.email == user.email,
+                    UserModel.email == str(user.email).lower(),
                     UserModel.is_active.is_(True),
                 )
             )

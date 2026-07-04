@@ -5,6 +5,7 @@ from src.core.settings import settings
 from src.exceptions.auth_exceptions import InvalidCredentials
 from src.exceptions.user_exceptions import UserAlreadyExists, UserNotFound
 from src.models.user_model import UserModel
+from src.schemas.Pagination_schemas import PaginationParams
 from src.schemas.admin_schemas import (
     AdminUserCreateSchema,
     AdminUserUpdateSchema,
@@ -50,9 +51,13 @@ class UserRepository:
         return query
 
     @staticmethod
-    async def get_users_query(session: AsyncSession):
+    async def get_users_query(
+        session: AsyncSession, pagination: PaginationParams
+    ):
         """Возвращает список пользователей из БД"""
-        result = await session.execute(select(UserModel))
+        result = await session.execute(
+            select(UserModel).limit(pagination.limit).offset(pagination.offset)
+        )
         users = result.scalars().all()
         if users:
             return users

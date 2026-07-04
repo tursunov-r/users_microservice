@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.db_connect import get_session
 from src.core.limiter import limiter
+from src.schemas.Pagination_schemas import PaginationParams
 from src.schemas.admin_schemas import (
     AdminUserCreateResponseSchema,
     AdminUserCreateSchema,
@@ -38,12 +39,15 @@ async def create_user(
 @limiter.limit("10/minute")
 async def get_users(
     request: Request,
+    pagination: PaginationParams = Depends(PaginationParams),
     session: AsyncSession = Depends(get_session),
     token: TokenData = Depends(require_admin),
 ):
     """Возвращает список всех пользователей,
     доступно только пользователям с ролью admin"""
-    users = await admin_service.get_users(session=session, token=token)
+    users = await admin_service.get_users(
+        session=session, token=token, pagination=pagination
+    )
     return users
 
 

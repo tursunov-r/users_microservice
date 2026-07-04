@@ -46,7 +46,7 @@ def verify_token(token: str):
 
 
 async def get_current_user(request: Request):
-    token = request.cookies.get("access_token")
+    token = request.cookies.get(settings.JWT_ACCESS_COOKIE_NAME)
 
     if not token:
         raise Unauthorized("You are not authorized")

@@ -30,7 +30,7 @@
 ## 🔒 Авторизация и доступ
 - Доступ к эндпоинтам администратора закрыт для обычных пользователей
   - При отсутствии прав администратора → **403 Forbidden**
-- При отсутствии аутентификации → **401 Unauthorized**
+  - При отсутствии аутентификации → **401 Unauthorized**
 - Удалённые пользователи (`is_active = False`) не могут пройти аутентификацию
 
 ---
@@ -45,6 +45,12 @@ DB_PORT = <YOUR_DB_PORT>
 DB_NAME = "<YOUR_DB_NAME>"
 DB_USER = "<YOUR_DB_USERNAME>"
 DB_PASSWORD = "<YOUR_DB_PASSWORD>"
+
+TEST_DB_HOST = <TEST_DB_HOST>
+TEST_DB_PORT = <TEST_DB_PORT>
+TEST_DB_NAME = <TEST_DB_NAME>
+TEST_DB_USER = <TEST_DB_USERNAME>
+TEST_DB_PASSWORD = <TEST_DB_PASSWORD>
 
 admin_email = "<admin@email.com>"
 admin_password = "<AdminPassword12345!>"

@@ -32,6 +32,16 @@ def create_access_token(data: dict, expires_delta: timedelta):
     return encoded_jwt
 
 
+def create_refresh_token(
+    data: dict, expires_delta: timedelta = timedelta(days=7)
+):
+    to_encode = data.copy()
+    expire = datetime.now() + expires_delta
+    to_encode.update({"exp": expire, "type": "refresh"})
+    encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+
 def verify_token(token: str):
     """Проверить JWT токен"""
     try:

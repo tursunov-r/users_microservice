@@ -15,6 +15,9 @@ class UserModel(Base):
     middle_name: Mapped[str] = mapped_column(nullable=False)
     last_name: Mapped[str] = mapped_column(nullable=False)
     email: Mapped[str] = mapped_column(nullable=False, unique=True, index=True)
+    phone_number: Mapped[str] = mapped_column(
+        nullable=False, unique=True, index=True, server_default=""
+    )
     password: Mapped[str] = mapped_column(nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         nullable=False, default=datetime.now

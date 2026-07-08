@@ -39,6 +39,7 @@ class UserRepository:
             middle_name=user.middle_name,
             last_name=user.last_name,
             email=str(user.email).lower(),
+            phone_number=user.phone_number,
             password=hash_pwd,
             role="user",  # дефолтная роль
         )
@@ -110,6 +111,8 @@ class UserRepository:
                 result.password = hash_password(user.password)
             if user.email:
                 result.email = str(user.email).lower()
+            if user.phone_number:
+                result.phone_number = str(user.phone_number).lower()
             if isinstance(user, AdminUserUpdateSchema):
                 # если пользователя обновляет админ, можно обновить роль и восстановить пользователя.
                 if user.role:

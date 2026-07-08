@@ -4,7 +4,6 @@ from pydantic import (
     BaseModel,
     EmailStr,
     Field,
-    constr,
 )
 
 from src.schemas.mixins import PasswordMixin, PasswordOptionalMixin

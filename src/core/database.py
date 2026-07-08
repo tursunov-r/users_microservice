@@ -1,7 +1,6 @@
 from src.core.db_connect import (
     async_session,
     engine,
-    async_test_session,
     test_engine,
 )
 from src.models.base_model import (

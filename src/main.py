@@ -12,7 +12,6 @@ from src.api.exceprion_handlers import register_exception_handlers
 from src.core.database import (
     create_admin,
     create_tables,
-    create_test_admin,
     create_test_tables,
 )
 from src.core.db_connect import get_session, test_get_session
@@ -24,10 +23,9 @@ from src.core.settings import settings
 async def lifespan(app: FastAPI):
     if not settings.test:
         await create_tables()
-        await create_admin()
     else:
         await create_test_tables()
-        await create_test_admin()
+    await create_admin()
     yield
 
 

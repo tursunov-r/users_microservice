@@ -27,11 +27,3 @@ async def create_admin():
     async with async_session() as session:
         await user_repository.create_admin_query(session)
         await session.commit()
-        print("Admin created")
-
-
-async def create_test_admin():
-    async with async_test_session() as session:
-        await user_repository.create_admin_query(session)
-        await session.commit()
-        print("Test admin created")

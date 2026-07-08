@@ -14,7 +14,7 @@ from src.schemas.user_schemas import TokenData
 from src.services.admin_service import admin_service
 from src.utils.require_admin import require_admin
 
-router = APIRouter(prefix="/api/v1/admin/users", tags=["admin"])
+router = APIRouter(prefix="/api/v1/admin/users", tags=["admin v1"])
 
 
 @router.post(

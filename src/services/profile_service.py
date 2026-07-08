@@ -1,13 +1,18 @@
 from datetime import timedelta
 
-from fastapi import Response
+from fastapi import Response, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.settings import settings
+from src.exceptions.auth_exceptions import Unauthorized
 from src.repositories.auth_repository import auth_repository
 from src.schemas.user_schemas import TokenData, UserLoginSchema
 from src.services.logger import log_service
-from src.utils.auth import create_access_token, create_refresh_token
+from src.utils.auth import (
+    create_access_token,
+    create_refresh_token,
+    verify_refresh_token,
+)
 
 
 class ProfileService:
@@ -43,7 +48,7 @@ class ProfileService:
             httponly=True,
             secure=False,
             samesite="Lax",
-            max_age=1 * 24,
+            max_age=3600,
         )
         response.set_cookie(
             key="refresh_token",
@@ -59,6 +64,36 @@ class ProfileService:
             "refresh_token": refresh_token,
             "token_type": "bearer",
         }
+
+    @staticmethod
+    async def refresh_user(request: Request, response: Response):
+        refresh_token = request.cookies.get("refresh_token")
+        if not refresh_token:
+            raise Unauthorized("refresh token not found")
+
+        token_data = verify_refresh_token(refresh_token)
+        if not token_data:
+            raise Unauthorized("Please login again")
+
+        new_access_token = create_access_token(
+            data={
+                "user_id": token_data.user_id,
+                "email": token_data.email,
+                "role": token_data.role,
+            },
+            expires_delta=timedelta(minutes=15),
+        )
+
+        response.set_cookie(
+            key=settings.JWT_ACCESS_COOKIE_NAME,
+            value=new_access_token,
+            httponly=True,
+            secure=False,
+            samesite="Lax",
+            max_age=15 * 60,
+        )
+
+        return {"access_token": new_access_token, "token_type": "bearer"}
 
     @staticmethod
     async def get_user_profile(user: TokenData, session: AsyncSession):

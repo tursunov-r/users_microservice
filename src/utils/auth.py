@@ -55,6 +55,20 @@ def verify_token(token: str):
         return None
 
 
+def verify_refresh_token(token: str):
+    try:
+        payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[ALGORITHM])
+        if payload.get("type") != "refresh":
+            return None
+        return TokenData(
+            user_id=payload.get("user_id"),
+            email=payload.get("email"),
+            role=payload.get("role"),
+        )
+    except JWTError:
+        return None
+
+
 async def get_current_user(request: Request):
     token = request.cookies.get(settings.JWT_ACCESS_COOKIE_NAME)
 

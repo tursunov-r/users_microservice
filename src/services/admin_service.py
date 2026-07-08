@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.repositories.user_repository import user_repository
+from src.schemas.Pagination_schemas import PaginationParams
 from src.schemas.admin_schemas import (
     AdminUserCreateSchema,
     AdminUserUpdateSchema,
@@ -21,8 +22,12 @@ class AdminService:
         return result
 
     @staticmethod
-    async def get_users(session: AsyncSession, token: TokenData):
-        result = await user_repository.get_users_query(session=session)
+    async def get_users(
+        session: AsyncSession, token: TokenData, pagination: PaginationParams
+    ):
+        result = await user_repository.get_users_query(
+            session=session, pagination=pagination
+        )
         log_service.info(
             f"{token.email} retrieved users: ", users_count=len(result)
         )

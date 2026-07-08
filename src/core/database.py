@@ -1,4 +1,8 @@
-from src.core.db_connect import async_session, engine
+from src.core.db_connect import (
+    async_session,
+    engine,
+    test_engine,
+)
 from src.models.base_model import (
     Base,
 )
@@ -12,8 +16,13 @@ async def create_tables():
         print("Tables created")
 
 
+async def create_test_tables():
+    async with test_engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+        print("Test tables created")
+
+
 async def create_admin():
     async with async_session() as session:
         await user_repository.create_admin_query(session)
         await session.commit()
-        print("Admin created")

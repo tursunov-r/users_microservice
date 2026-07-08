@@ -32,10 +32,34 @@ def create_access_token(data: dict, expires_delta: timedelta):
     return encoded_jwt
 
 
+def create_refresh_token(
+    data: dict, expires_delta: timedelta = timedelta(days=7)
+):
+    to_encode = data.copy()
+    expire = datetime.now() + expires_delta
+    to_encode.update({"exp": expire, "type": "refresh"})
+    encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+
 def verify_token(token: str):
     """Проверить JWT токен"""
     try:
         payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[ALGORITHM])
+        return TokenData(
+            user_id=payload.get("user_id"),
+            email=payload.get("email"),
+            role=payload.get("role"),
+        )
+    except JWTError:
+        return None
+
+
+def verify_refresh_token(token: str):
+    try:
+        payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[ALGORITHM])
+        if payload.get("type") != "refresh":
+            return None
         return TokenData(
             user_id=payload.get("user_id"),
             email=payload.get("email"),

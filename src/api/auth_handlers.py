@@ -36,3 +36,17 @@ async def logout(
 
     response.status_code = status.HTTP_204_NO_CONTENT
     return response
+
+
+@router.post("/refresh")
+@limiter.limit("5/minute")
+async def refresh_tokens(
+    request: Request,
+    response: Response,
+):
+    """Refresh token для обновления access token
+    Если нет refresh token вызывается исключений Unauthorized"""
+    refresh = await profile_service.refresh_user(
+        request=request, response=response
+    )
+    return refresh

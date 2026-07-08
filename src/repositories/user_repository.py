@@ -5,6 +5,7 @@ from src.core.settings import settings
 from src.exceptions.auth_exceptions import InvalidCredentials
 from src.exceptions.user_exceptions import UserAlreadyExists, UserNotFound
 from src.models.user_model import UserModel
+from src.schemas.Pagination_schemas import PaginationParams
 from src.schemas.admin_schemas import (
     AdminUserCreateSchema,
     AdminUserUpdateSchema,
@@ -38,6 +39,7 @@ class UserRepository:
             middle_name=user.middle_name,
             last_name=user.last_name,
             email=str(user.email).lower(),
+            phone_number=user.phone_number,
             password=hash_pwd,
             role="user",  # дефолтная роль
         )
@@ -50,9 +52,13 @@ class UserRepository:
         return query
 
     @staticmethod
-    async def get_users_query(session: AsyncSession):
+    async def get_users_query(
+        session: AsyncSession, pagination: PaginationParams
+    ):
         """Возвращает список пользователей из БД"""
-        result = await session.execute(select(UserModel))
+        result = await session.execute(
+            select(UserModel).limit(pagination.limit).offset(pagination.offset)
+        )
         users = result.scalars().all()
         if users:
             return users
@@ -105,6 +111,8 @@ class UserRepository:
                 result.password = hash_password(user.password)
             if user.email:
                 result.email = str(user.email).lower()
+            if user.phone_number:
+                result.phone_number = str(user.phone_number).lower()
             if isinstance(user, AdminUserUpdateSchema):
                 # если пользователя обновляет админ, можно обновить роль и восстановить пользователя.
                 if user.role:
@@ -171,6 +179,7 @@ class UserRepository:
         )
 
         session.add(create_admin)
+        print("Admin created")
 
 
 user_repository = UserRepository()

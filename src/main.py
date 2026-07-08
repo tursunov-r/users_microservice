@@ -9,18 +9,31 @@ from starlette.middleware.cors import CORSMiddleware
 
 from src.api import routers
 from src.api.exceprion_handlers import register_exception_handlers
-from src.core.database import create_admin, create_tables
+from src.core.database import (
+    create_admin,
+    create_tables,
+    create_test_tables,
+)
+from src.core.db_connect import get_session, test_get_session
 from src.core.limiter import limiter
+from src.core.settings import settings
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await create_tables()
+    if not settings.test:
+        await create_tables()
+    else:
+        await create_test_tables()
     await create_admin()
     yield
 
 
 app = FastAPI(lifespan=lifespan)
+
+if settings.test:
+    app.dependency_overrides[get_session] = test_get_session
+
 register_exception_handlers(app)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
